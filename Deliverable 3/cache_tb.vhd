@@ -5,32 +5,32 @@ use ieee.numeric_std.all;
 entity cache_tb is
 end cache_tb;
 
-architecture behavior of cache_tb is
+architecture behaviour of cache_tb is
 
-component cache is
-generic(
-    ram_size : INTEGER := 32768;
-);
-port(
-    clock : in std_logic;
-    reset : in std_logic;
+	component cache is
+		generic(
+			ram_size : INTEGER := 32768
+		);
+		port(
+			clock : in std_logic;
+			reset : in std_logic;
 
-    -- Avalon interface --
-    s_addr : in std_logic_vector (31 downto 0);
-    s_read : in std_logic;
-    s_readdata : out std_logic_vector (31 downto 0);
-    s_write : in std_logic;
-    s_writedata : in std_logic_vector (31 downto 0);
-    s_waitrequest : out std_logic; 
+			-- Avalon interface --
+			s_addr : in std_logic_vector (31 downto 0);
+			s_read : in std_logic;
+			s_readdata : out std_logic_vector (31 downto 0);
+			s_write : in std_logic;
+			s_writedata : in std_logic_vector (31 downto 0);
+			s_waitrequest : out std_logic; 
 
-    m_addr : out integer range 0 to ram_size-1;
-    m_read : out std_logic;
-    m_readdata : in std_logic_vector (7 downto 0);
-    m_write : out std_logic;
-    m_writedata : out std_logic_vector (7 downto 0);
-    m_waitrequest : in std_logic
-);
-end component;
+			m_addr : out integer range 0 to ram_size-1;
+			m_read : out std_logic;
+			m_readdata : in std_logic_vector (7 downto 0);
+			m_write : out std_logic;
+			m_writedata : out std_logic_vector (7 downto 0);
+			m_waitrequest : in std_logic
+		);
+	end component;
 
 component memory is 
 GENERIC(
@@ -101,7 +101,7 @@ port map (
     memread => m_read,
     readdata => m_readdata,
     waitrequest => m_waitrequest
-);
+);	
 				
 
 clk_process : process
@@ -112,10 +112,141 @@ begin
   wait for clk_period/2;
 end process;
 
-test_process : process
-begin
+test_process : process                                                 
+begin                                                                  
+                        
+	--IMPOSSIBLE CASES
+	--INVALID - READ CLEAN HIT 
+	--INVALID - READ DIRTY HIT 
+	--INVALID - READ DIRTY MISS
+	--INVALID - WRITE CLEAN HIT 
+	--INVALID - WRITE DIRTY HIT 
+	--INVALID - WRITE DIRTY MISS
+	
+	--HIT/MISS RELATE TO TAG HIT/MISS
+                   
+	WAIT FOR clk_period;                                           
+	-- Attempt to write to cache                                     
+	
+	-- INVALID  - WRITE MISS CLEAN and  VALID - READ HIT (CLEAN/DIRTY)  
+	s_addr <= "11111111111111111111111111111111";                        
+	s_write <= '1';                                                      
+	s_writedata <= x"000F000A";                                          
+	wait until rising_edge(s_waitrequest);                               
+	s_read <= '1';                                                       
+	s_write <= '0';                                                      
+	wait until rising_edge(s_waitrequest);                               
+	assert s_readdata = x"000F000A" report "write unsuccessful" severity error;
+	s_read <= '0';                                                       
+	s_write <= '0';                                                      
+	
+	wait for clk_period;
+	
+	-- INVALID - READ CLEAN MISS
+	s_addr <= "11111111101111011111111110111111";                        
+	s_read <= '1';                                                       
+	s_write <= '0';                                                      
+	wait until rising_edge(s_waitrequest);                               
+	s_read <= '0';                                                       
+	s_write <= '0';     
+	
+	wait for clk_period;
 
--- put your tests here
+	-- VALID  READ CLEAN MISS 
+	s_addr <= "00000000000000000000000000000000";	
+	s_read <= '1';                                                       
+	s_write <= '0';                                                      
+	wait until rising_edge(s_waitrequest);                               
+	s_addr <= "00000000000000000000000010000000";	
+	s_read <= '1';                                                       
+	s_write <= '0';                                                      
+	wait until rising_edge(s_waitrequest);                               
+	s_read <= '0';                                                       
+	s_write <= '0';
+	
+	wait for clk_period;
+
+	-- VALID WRITE CLEAN HIT 
+	s_addr <= "10000000000000000000000000000000";	
+	s_read <= '1';                                                       
+	s_write <= '0';                                                      
+	wait until rising_edge(s_waitrequest);                               
+	s_write <= '1';
+	s_read <= '0';
+	s_writedata <= x"0000000B";
+	wait until rising_edge(s_waitrequest);                               
+	s_write <= '0';
+	s_read <= '0';
+
+	wait for clk_period;
+		
+	--VALID  WRITE CLEAN MISS
+	s_addr <= "11100000000000000000000000000000";	
+	s_read <= '1';                                                       
+	s_write <= '0';                                                      
+	wait until rising_edge(s_waitrequest);                               
+	s_addr <= "11100000000000000000001000000000";	
+	s_write <= '1';
+	s_read <= '0';
+	s_writedata <= x"0000000D";
+	wait until rising_edge(s_waitrequest);                               
+	s_write <= '0';
+	s_read <= '0';
+	
+	wait for clk_period;
+	
+	-- VALID WRITE DIRTY HIT 
+	s_addr <= "11000000000000000000000000000000";	
+	s_write <= '1';
+	s_read <= '0';
+	s_writedata <= x"0000000B";
+	wait until rising_edge(s_waitrequest);                               
+	s_addr <= "11000000000000000000000000000000";	
+	s_write <='0';
+	wait for clk_period;
+	s_write <= '1';
+	s_read <= '0';
+	s_writedata <= x"0000000C";
+	wait until rising_edge(s_waitrequest);                               
+	s_write <= '0';
+	s_read <= '0';
+	
+	wait for clk_period;
+	
+	-- VALID - WRITE MISS DIRTY
+	WAIT FOR clk_period;
+	s_addr <= "11111100000000000000000000000000";
+	s_write <= '1';
+	s_writedata <= x"04030201";
+	wait until rising_edge(s_waitrequest);
+	s_addr <= "00000000000000000000000100000000";
+	s_write <= '1';
+	s_writedata <= x"000000BA"; 	
+	wait until rising_edge(s_waitrequest);
+	s_read <= '1';
+	s_write <= '0';
+	wait until rising_edge(s_waitrequest);
+	assert s_readdata = x"000000BA" report "write unsuccessful" severity error;
+	s_read <= '0';
+	s_write <= '0';
+
+	wait for clk_period;
+
+	-- VALID - READ MISS DIRTY
+	WAIT FOR clk_period;
+	s_addr <= "11111110000000000000000000000000";
+	s_write <= '1';
+	s_writedata <= x"04030201";
+	wait until rising_edge(s_waitrequest);
+	s_addr <= "00000000000000000000100000000000";
+	s_write <= '0';
+	s_read <= '1';
+	wait until rising_edge(s_waitrequest);
+	assert s_readdata = x"03020100" report "write unsuccessful" severity error;
+	s_read <= '0';
+	s_write <= '0';
+
+	wait;
 	
 end process;
 	
