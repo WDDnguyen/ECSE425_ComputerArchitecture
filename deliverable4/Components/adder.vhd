@@ -12,8 +12,6 @@ end adder;
 
 architecture adder_arch of adder is
 
---signal internal_output : std_logic_vector(31 downto 0);
-signal internal_output : std_logic_vector(31 downto 0);
 signal add : integer;
 
 begin
@@ -24,7 +22,8 @@ begin
 	
 end process;
 
-
 adderOutput <= std_logic_vector(to_unsigned(add, adderOutput'length));
+
+
 	
 end adder_arch;

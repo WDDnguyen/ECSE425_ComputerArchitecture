@@ -35,8 +35,6 @@ ARCHITECTURE behaviour OF instructionMemory_tb IS
     signal readdata: STD_LOGIC_VECTOR (31 DOWNTO 0);
     signal waitrequest: STD_LOGIC;
 
-	
-	
 BEGIN
 
     --dut => Device Under Test
@@ -64,22 +62,7 @@ BEGIN
     test_process : process
     BEGIN
         wait for clk_period;
-        --address <= 14; 
-        --writedata <= X"12";
-        --memwrite <= '1';
-        
-        --waits are NOT synthesizable and should not be used in a hardware design
-        --wait until rising_edge(waitrequest);
-        --memwrite <= '0';
-        --memread <= '1';
-        --wait until rising_edge(waitrequest);
-        --assert readdata = x"12" report "write unsuccessful" severity error;
-        --memread <= '0';
-        --wait for clk_period;
-        --address <= 12;memread <= '1';
-        --wait until rising_edge(waitrequest);
-        --assert readdata = x"0c" report "write unsuccessful" severity error;
-        --memread <= '0';
+     
         wait;
 
     END PROCESS;
