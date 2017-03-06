@@ -14,26 +14,25 @@ end mux;
 
 architecture mux_arch of mux is
 
-signal selected_output : std_logic_vector(31 downto 0);
- 
 begin
 
+-- SOMEHOW DOESNT WORK WITH THE SELECT INPUT ALWAYS GIVE  WHEN OTHERS.
 process (clk)
 begin
 	
 	case selectInput is
 	
 	when '0' =>
-	selected_output <= input1;
+	selectOutput <= input1;
 	
 	when '1' =>
-	selected_output <= input2;
+	selectOutput <= input2;
 	
-	when others => report "unreachable";
+	when others =>
+	selectOutput <= "10101010000000000000000000101010";
 	end case;
 	
 end process;
 	
-	selectOutput <= selected_output;
 	
 end mux_arch;

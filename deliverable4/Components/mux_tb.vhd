@@ -59,7 +59,7 @@ test_process : process
         
 		wait for clk_period;
         
-		selection <= '1';
+		selection <= '0';
         
 		wait;
 		
