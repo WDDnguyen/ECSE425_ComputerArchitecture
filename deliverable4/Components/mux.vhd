@@ -29,7 +29,7 @@ begin
 	when '1' =>
 	selected_output <= input2;
 	
-	when others => report "unreachable" severity failure;
+	when others => report "unreachable";
 	end case;
 	
 end process;
