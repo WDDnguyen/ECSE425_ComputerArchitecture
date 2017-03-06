@@ -12,7 +12,6 @@ end pc;
 
 architecture pc_arch of pc is
 
-signal internal_output : std_logic_vector(31 downto 0);
  
 begin
 
@@ -20,10 +19,13 @@ process (clk,reset)
 begin
 	
 	if (reset = '1') then
-		internal_output <= x"00000000";
+		counterOutput <= x"00000000";
 	end if;
-end process;
+	
+	counterOutput <= counterInput;
 
-counterOutput <= internal_output;
+	end process;
+
+
 	
 end pc_arch;
