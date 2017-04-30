@@ -58,10 +58,15 @@ test_process : process
     BEGIN
         
 		muxValue <= "00000000000000000000000000000000";
-		selection <= '1';
+		selection <= '0';
 		wait for clk_period;
         report "STARTING SIMULATION \n";
-		selection <= '0';
+		selection <= '1';
+		wait for clk_period;
+        wait for clk_period;
+        wait for clk_period;
+        wait for clk_period;
+        
 		wait;
 		
 end process;

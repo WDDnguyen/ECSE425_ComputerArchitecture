@@ -11,7 +11,7 @@ architecture mux_tb_arch of mux_tb is
 
 component mux is 
 port(clk : in std_logic;
-	 input2 : in std_logic_vector(31 downto 0);
+	 input0 : in std_logic_vector(31 downto 0);
 	 input1 : in std_logic_vector(31 downto 0);
 	 selectInput : in std_logic;
 	 selectOutput : out std_logic_vector(31 downto 0)
